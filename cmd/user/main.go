@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"simpl-commerce/handler"
@@ -23,15 +24,18 @@ func main() {
 }
 
 func newServer(cfg internal.Config) *handler.Server {
-	var repo repository.RepositoryInterface = repository.NewRepository(repository.NewRepositoryOptions{
-		Dsn: fmt.Sprintf("%s://%s:%s@%s:%d/%s?sslmode=disable",
-			"postgres",
-			cfg.DB.User,
-			cfg.DB.Password,
-			cfg.DB.Host,
-			cfg.DB.Port,
-			cfg.DB.DatabaseName),
-	})
+	dbConn, err := sql.Open("postgres", fmt.Sprintf("%s://%s:%s@%s:%d/%s?sslmode=disable",
+		"postgres",
+		cfg.DB.User,
+		cfg.DB.Password,
+		cfg.DB.Host,
+		cfg.DB.Port,
+		cfg.DB.DatabaseName))
+	if err != nil {
+		panic(err)
+	}
+
+	var repo repository.RepositoryInterface = repository.NewRepository(dbConn)
 	opts := handler.NewServerOptions{
 		Repository: repo,
 	}

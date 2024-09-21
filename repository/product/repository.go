@@ -1,10 +1,6 @@
-package user
+package product
 
-import (
-	"database/sql"
-
-	_ "github.com/lib/pq"
-)
+import "database/sql"
 
 type Repository struct {
 	Db *sql.DB
